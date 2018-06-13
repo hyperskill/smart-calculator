@@ -13,6 +13,10 @@ public class Repl {
       switch (operator) {
         case "/exit": return false;
 
+        case "/help":
+        System.out.println("The program calculates the sum of numbers"); 
+        break;
+
         default:
         if (operands.size() >= 1) System.out.println(sum());
       }
