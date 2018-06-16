@@ -17,22 +17,26 @@ public class Repl {
         String line = sc.nextLine();
 
         if (line != null && line.length() > 0) {
-          switch(line.trim()) {
-            case "/exit":
-              cont = false;
-              break;
-            case "\\help":
-              System.out.println("Program calculates the expressions like these: 4 + 6 - 8, 2 - 3 - 4 and so on. It supports both unary and binary minuses. Enter '/exit' to terminate program.");
-              break;
-            default:
-              try {
-                String[] postfix =  infixToPostfix(line.replaceAll("\\s+"," ").split(DELIM));
-                int res = calculatePostfix(postfix);
-                System.out.println("Result = " + res);
-              } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
-              }
-          }//eof switch
+          if (line.contains("/") || line.contains("\\")) {
+            switch (line.trim()) {
+              case "/help":
+                System.out.println("Program calculates the expressions like these: 4 + 6 - 8, 2 - 3 - 4 and so on. It supports both unary and binary minuses. Enter '/exit' to terminate program.");
+                break;
+              case "\\exit":
+                cont = false;
+                break;
+              default:
+                System.out.println("Unsupported command");
+            } //
+          } else {
+            try {
+              String[] postfix =  infixToPostfix(lineToInfix(line));
+              int res = calculatePostfix(postfix);
+              System.out.println("Result = " + res);
+            } catch (IllegalArgumentException e) {
+              System.out.println(e.getMessage());
+            }
+          }
         }//eof if
       }//eof while
       System.out.println("Bye!");
@@ -52,7 +56,7 @@ public class Repl {
       for (String word : postfix) {
         if (isOperand(word)) {
           res.addFirst(Integer.parseInt(word));
-        } else if (word.contains("-") || word.contains("+")) {
+        } else if ((word.contains("-") || word.contains("+")) && res.size() >= 2) {
             int operand1 = (Integer) res.removeFirst();
             int operand2 = (Integer) res.removeFirst();
             int result = 0;
@@ -62,7 +66,7 @@ public class Repl {
               result = operand1 + operand2;
             } else throw new IllegalArgumentException("Unsupported operation " + word);
             res.addFirst(result);
-        } else throw new IllegalArgumentException("Can't process expression " + word);
+        } else throw new IllegalArgumentException("Can't process an expression");
       }
       return (Integer) res.removeFirst();
     } else throw new IllegalArgumentException("Expression is null or zero length");
@@ -79,16 +83,19 @@ public class Repl {
       String[] result = new String[words.length];
       int i = 0;
       Deque<String> stack = new LinkedList<String>();
+      boolean prevIsOperation = true;
       for (String word : words){
-          if (word.contains("-") || word.contains("+")) {
+          if (word.matches("[\\+]+") || word.matches("[-]+")) {
               String operation = convertOperation(word);
               if (stack.size() > 0) {
                 result[i++] = (String)stack.removeFirst();
               }
               stack.addFirst(operation);
-            } else if (isOperand(word)) {
+              prevIsOperation = true;
+            } else if (isOperand(word) && prevIsOperation) {
               result[i++] = word;
-            } else throw new IllegalArgumentException("Unsupported expression: " + word);
+              prevIsOperation = false;
+            } else throw new IllegalArgumentException("Unsupported expression");
       }
       if (stack.size() > 0) {
         result[i++] = (String)stack.removeFirst();
@@ -135,6 +142,34 @@ public class Repl {
     } else {
       throw new IllegalArgumentException("Unsupported operation: " + word);
     }
+  }
+
+
+  private static String[] lineToInfix(String line) throws IllegalArgumentException {
+    String[] expr = line.replaceAll("\\s+"," ").split(DELIM);
+    String[] result = new String[expr.length];
+    int i = 0;
+
+    for (String word : expr) {
+      if ((!word.matches("[0-9+-]+")) || (word.contains("-") && word.contains("+"))) throw new IllegalArgumentException("Unsupported expression: " + word);
+      if (word.matches("[\\+]+[0-9]+")) {
+        word = word.replaceAll("\\+","");
+      } else if (word.matches("[-]+[0-9]+")){
+        Pattern pattern = Pattern.compile("\\-");
+        Matcher matcher = pattern.matcher(word);
+        int count = 0;
+        while (matcher.find()) {
+          count++;
+        }
+        if (count % 2 != 0) {
+          word = "-" + word.replaceAll("\\-","");
+        } else {
+          word = word.replaceAll("\\-","");
+        }
+      }
+      result[i++] = word;
+    }
+      return result;
   }
 
   private static final String DELIM = " ";
