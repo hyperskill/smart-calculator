@@ -6,7 +6,8 @@ public class Main {
         
         int a = scanner.nextInt();
         int b = scanner.nextInt();
+        int c = scanner.nextInt();
         
-        System.out.println(a + b);
+        System.out.println(a + b + c);
     }
 }
