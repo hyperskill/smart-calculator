@@ -1,5 +1,3 @@
-package com.kostylevv.repl;
-
 import java.util.*;
 import java.util.regex.*;
 
@@ -176,6 +174,10 @@ class Expression {
               result = operand2 - operand1;
             } else if (word.getType() == Type.PLUS) {
               result = operand1 + operand2;
+			 			} else if (word.getType() == Type.MULT) {
+              result = operand1 * operand2;
+            } else if (word.getType() == Type.DIV) {
+              result = operand2 / operand1;
             } else throw new IllegalArgumentException("Unsupported operation " + word);
             res.addFirst(result);
         } else throw new IllegalArgumentException("Can't process an expression");
@@ -191,28 +193,59 @@ class Expression {
    * @return expression in postfix notation
   **/
   private static List<ExPart> infixToPostfix(List<ExPart> words) throws IllegalArgumentException {
-    if (words != null && words.size() > 0) {
-      List<ExPart> result = new ArrayList<ExPart>();
-      int i = 0;
-      Deque<ExPart> stack = new LinkedList<ExPart>();
-      boolean prevIsOperation = true;
-      for (ExPart word : words){
-          if (word.getType().isOperator()) {
-              if (stack.size() > 0) {
-                result.add(stack.removeFirst());
-              }
-              stack.addFirst(word);
-              prevIsOperation = true;
-            } else if (word.getType() == Type.DIGIT && prevIsOperation) {
-              result.add(word);
-              prevIsOperation = false;
-            } else throw new IllegalArgumentException("Unsupported expression: " + word);
-      }
-      if (stack.size() > 0) {
-        result.add(stack.removeFirst());
-      }
-      return result;
-    } else throw new IllegalArgumentException("Right side of an expression should not be empty");
+			if (words != null && words.size() > 0) {
+				List<ExPart> result = new ArrayList<ExPart>();
+      	Deque<ExPart> stack = new LinkedList<ExPart>();
+
+      	for (ExPart word : words){
+
+					switch(word.getType()) {
+						case DIGIT:
+							result.add(word);
+						break;
+
+						case LEFT_PAR:
+							stack.addFirst(word);
+						break;
+
+						case RIGHT_PAR:
+							while(true) {
+								if (stack.isEmpty() || stack.getFirst().getType() == Type.LEFT_PAR) break;
+								result.add(stack.removeFirst());
+							}
+							if (!stack.isEmpty() && stack.getFirst().getType() == Type.LEFT_PAR) stack.removeFirst();
+							else throw new IllegalArgumentException("Unsupported expression. Left bracket missing");
+						break;
+
+						case PLUS:
+						case MINUS:
+						case MULT:
+						case DIV:
+
+							while (!stack.isEmpty() && stack.peek().getType() != Type.LEFT_PAR && word.getPriority() <= stack.getFirst().getPriority()){
+								result.add(stack.removeFirst());
+							}
+							stack.addFirst(word);
+						break;
+
+					default:
+						throw new IllegalArgumentException("Unsupported token " + word.getValue());
+					} //eof Switch
+			} //eof for
+
+			while (!stack.isEmpty()) {
+				result.add(stack.removeFirst());
+			}
+
+			for (ExPart ex : result) {
+				System.out.print(ex.getValue());
+			}
+			System.out.println();
+
+    	return result;
+
+  } else throw new IllegalArgumentException("Unsupported expression " + words.toString());
+
   }
 
 
@@ -359,6 +392,7 @@ class Expression {
 	* @param operator operation in raw form
 	* @return operation in unified form: +, - or =
 	* @throws IllegalArgumentException if operation can not be converted to unified form
+	* @TODO: patterns -> consts
 	**/
 	private char processOperator(String operator) {
 		if (operator == null) throw new IllegalArgumentException("Unsupported operator NULL");
@@ -395,6 +429,13 @@ class Expression {
 			}
 		}
 
+		//mult
+		pattern = Pattern.compile("^[*]*$");
+		matcher = pattern.matcher(operator);
+		if (matcher.matches()) {
+			return '*';
+		}
+
 		throw new IllegalArgumentException("Unsupported operator: " + operator);
 
 	}
@@ -405,7 +446,7 @@ class Expression {
 			return Type.DIGIT;
 		} else if (Character.isLetter(c)) {
 			return Type.VARIABLE;
-		} else if (c == '=' || c == '+' || c == '-') {
+		} else if (c == '=' || c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')') {
 			switch(c) {
 				case '=':
 				return Type.EQUALS;
@@ -413,6 +454,14 @@ class Expression {
 				return Type.PLUS;
 				case '-':
 				return Type.MINUS;
+				case '*':
+				return Type.MULT;
+				case '/':
+				return Type.DIV;
+				case '(':
+				return Type.LEFT_PAR;
+				case ')':
+				return Type.RIGHT_PAR;
 			}
 		}
 		return Type.UNSUPPORTED;
@@ -420,7 +469,7 @@ class Expression {
 
 	//possible types of expression parts
 	enum Type {
-		VARIABLE, DIGIT, PLUS, MINUS, EQUALS, UNSUPPORTED;
+		VARIABLE, DIGIT, PLUS, MINUS, EQUALS, MULT, DIV, LEFT_PAR, RIGHT_PAR, UNSUPPORTED;
 
 		boolean isOfSameGroup(Type other) {
 			if (other == null || !(other instanceof Type)) return false;
@@ -436,12 +485,20 @@ class Expression {
 		}
 
 		boolean isOperator() {
-			return (this == PLUS || this == MINUS || this == EQUALS);
+			return (this == PLUS || this == MINUS || this == EQUALS || this == MULT || this == DIV || this == LEFT_PAR || this == RIGHT_PAR);
 		}
 
 		boolean isPlusMinus() {
 			return (this == PLUS || this == MINUS);
 		}
+
+		int getPriority() {
+			if (this == LEFT_PAR || this == RIGHT_PAR) return 2;
+			if (this == DIV || this == MULT) return 1;
+			return 0;
+		}
+
+
 	}
 
 	//represents a part of an expression
@@ -466,6 +523,10 @@ class Expression {
 			this.expr = expr.toString();
 			this.type = Type.DIGIT;
 
+		}
+
+		public int getPriority() {
+			return this.type.getPriority();
 		}
 
 		public Type getType() {
@@ -504,6 +565,6 @@ class Expression {
 	private String assignedVariableName;
 
 	//pattern which include all allowed chars in expression
-	private static final Pattern ALLOWED_CHARS = Pattern.compile("^[a-zA-Z0-9+-=]*$");
+	private static final Pattern ALLOWED_CHARS = Pattern.compile("^[a-zA-Z0-9+-=*/()]*$");
 
 }
