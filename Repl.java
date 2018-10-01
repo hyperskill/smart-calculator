@@ -1,3 +1,5 @@
+package com.kostylevv.repl;
+
 import java.util.*;
 import java.util.regex.*;
 
@@ -20,7 +22,7 @@ public class Repl {
 
 			if (line != null && line.length() > 0 && line.trim().replace(" ","").length() > 0) {
 				//processing commands
-				if (line.contains("/")) {
+				if (line.startsWith("/")) {
 					switch (line.trim()) {
 						case "/help":
 						System.out.println("Program calculates the expressions like these: 4 + 6 - 8, 2 - 3 - 4 and so on. " +
@@ -107,7 +109,7 @@ class Expression {
 				//extract right side of an expression
 				List<ExPart> eval = infixLine.subList(2, infixLine.size());
 
-				//in case we have a simple assignment which does
+				//in case we have a simple assignment
 				if (eval.size() == 1) {
 					//substitute variables
 					substLine = substituteVariables(eval, variables);
