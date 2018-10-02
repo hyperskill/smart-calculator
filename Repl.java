@@ -3,8 +3,10 @@ import java.util.regex.*;
 
 /**
  * The Repl class implements a simple REPL.
- * It supports addition and substraction operations, variables are also supported.
- * It calculates the expressions like these: 4 + 6 - 8, 2 - 3 - 4 and so on.
+ * It supports addition, substraction, multiplication and divison operations.
+ * Variables and braces are also supported.
+ * It calculates the expressions like these:
+ *	4 + 6 - 8, 2 - 3 - 4, z+f * (a-b) and so on.
  * /vars commands shows assigned variables
  * /help command explains these operations
  * /exit command terminates application
@@ -23,8 +25,12 @@ public class Repl {
 				if (line.startsWith("/")) {
 					switch (line.trim()) {
 						case "/help":
-						System.out.println("Program calculates the expressions like these: 4 + 6 - 8, 2 - 3 - 4 and so on. " +
-									"It supports both unary and binary minuses. Enter '/exit' to terminate program. Enter '/vars' to show variables.");
+						System.out.println("It calculates the expressions like these: "  +
+														"*	4 + 6 - 8, 2 - 3 - 4, z+f * (a-b) and so on." +
+														"It supports addition, substraction, multiplication"+
+													  " and divison operations. Variables and braces" +
+														" are also supported. Enter '/exit' to terminate program." +
+														"Enter '/vars' to show variables.");
 						break;
 
 						case "/vars":
@@ -154,8 +160,6 @@ class Expression {
 
 	/**
    * Evaluates arithmetic expression in postfix notation.
-   * Simplified Dijkstra algorithm: supports only + and - operations
-   *
    * @param postfix arithmetic expression in postfix notation
    * @return result of calculation
   **/
@@ -237,15 +241,15 @@ class Expression {
 				result.add(stack.removeFirst());
 			}
 
+			/*
 			for (ExPart ex : result) {
 				System.out.print(ex.getValue());
 			}
 			System.out.println();
-
+			*/
     	return result;
 
-  } else throw new IllegalArgumentException("Unsupported expression " + words.toString());
-
+  	} else throw new IllegalArgumentException("Unsupported expression " + words.toString());
   }
 
 
@@ -398,29 +402,25 @@ class Expression {
 		if (operator == null) throw new IllegalArgumentException("Unsupported operator NULL");
 
 		//equals
-		Pattern pattern = Pattern.compile("^[=]*$");
-		Matcher matcher = pattern.matcher(operator);
+		Matcher matcher = EQUALS_PATTERN.matcher(operator);
 		if (matcher.matches()) {
 			return '=';
 		}
 
 		//plus
-		pattern = Pattern.compile("^[+]*$");
-		matcher = pattern.matcher(operator);
+		matcher = PLUS_PATTERN.matcher(operator);
 		if (matcher.matches()) {
 			return '+';
 		}
 
 		//plusminus
-		pattern = Pattern.compile("^[-+]*$");
-		matcher = pattern.matcher(operator);
+		matcher = PLUSMINUS_PATTERN.matcher(operator);
 		if (matcher.matches()) {
 			operator = operator.replace("+","");
 		}
 
 		//minus
-		pattern = Pattern.compile("^[-]*$");
-		matcher = pattern.matcher(operator);
+		matcher = MINUS_PATTERN.matcher(operator);
 		if (matcher.matches()) {
 			if (operator.length() % 2 == 0) {
 				return '+';
@@ -429,15 +429,7 @@ class Expression {
 			}
 		}
 
-		//mult
-		pattern = Pattern.compile("^[*]*$");
-		matcher = pattern.matcher(operator);
-		if (matcher.matches()) {
-			return '*';
-		}
-
 		throw new IllegalArgumentException("Unsupported operator: " + operator);
-
 	}
 
 	//determines the type of character in expression
@@ -477,7 +469,9 @@ class Expression {
 
 			if ((this == VARIABLE && other == VARIABLE) ||
 				(this == DIGIT && other == DIGIT) 		||
-				(this.isPlusMinus() && other.isPlusMinus())) {
+				(this.isPlusMinus() && other.isPlusMinus()) ||
+				(this == MULT && other == MULT) ||
+				(this == DIV && other == DIV)) {
 					return true;
 			} else {
 				return false;
@@ -497,7 +491,6 @@ class Expression {
 			if (this == DIV || this == MULT) return 1;
 			return 0;
 		}
-
 
 	}
 
@@ -566,5 +559,11 @@ class Expression {
 
 	//pattern which include all allowed chars in expression
 	private static final Pattern ALLOWED_CHARS = Pattern.compile("^[a-zA-Z0-9+-=*/()]*$");
+
+	//operator patterns
+	private static final Pattern EQUALS_PATTERN = Pattern.compile("^[=]*$");
+	private static final Pattern PLUS_PATTERN = Pattern.compile("^[+]*$");
+	private static final Pattern MINUS_PATTERN = Pattern.compile("^[-]*$");
+	private static final Pattern PLUSMINUS_PATTERN = Pattern.compile("^[-+]*$");
 
 }
