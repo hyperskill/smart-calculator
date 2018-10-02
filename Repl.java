@@ -182,6 +182,8 @@ class Expression {
               result = operand1 * operand2;
             } else if (word.getType() == Type.DIV) {
               result = operand2 / operand1;
+            } else if (word.getType() == Type.POW) {
+              result = (int)Math.pow(operand2,operand1);
             } else throw new IllegalArgumentException("Unsupported operation " + word);
             res.addFirst(result);
         } else throw new IllegalArgumentException("Can't process an expression");
@@ -225,6 +227,7 @@ class Expression {
 						case MINUS:
 						case MULT:
 						case DIV:
+						case POW:
 
 							while (!stack.isEmpty() && stack.peek().getType() != Type.LEFT_PAR && word.getPriority() <= stack.getFirst().getPriority()){
 								result.add(stack.removeFirst());
@@ -396,7 +399,6 @@ class Expression {
 	* @param operator operation in raw form
 	* @return operation in unified form: +, - or =
 	* @throws IllegalArgumentException if operation can not be converted to unified form
-	* @TODO: patterns -> consts
 	**/
 	private char processOperator(String operator) {
 		if (operator == null) throw new IllegalArgumentException("Unsupported operator NULL");
@@ -438,7 +440,7 @@ class Expression {
 			return Type.DIGIT;
 		} else if (Character.isLetter(c)) {
 			return Type.VARIABLE;
-		} else if (c == '=' || c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')') {
+		} else if (c == '=' || c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')' || c =='^') {
 			switch(c) {
 				case '=':
 				return Type.EQUALS;
@@ -454,6 +456,8 @@ class Expression {
 				return Type.LEFT_PAR;
 				case ')':
 				return Type.RIGHT_PAR;
+				case '^':
+				return Type.POW;
 			}
 		}
 		return Type.UNSUPPORTED;
@@ -461,7 +465,7 @@ class Expression {
 
 	//possible types of expression parts
 	enum Type {
-		VARIABLE, DIGIT, PLUS, MINUS, EQUALS, MULT, DIV, LEFT_PAR, RIGHT_PAR, UNSUPPORTED;
+		VARIABLE, DIGIT, PLUS, MINUS, EQUALS, MULT, DIV, LEFT_PAR, RIGHT_PAR, POW, UNSUPPORTED;
 
 		boolean isOfSameGroup(Type other) {
 			if (other == null || !(other instanceof Type)) return false;
@@ -471,7 +475,8 @@ class Expression {
 				(this == DIGIT && other == DIGIT) 		||
 				(this.isPlusMinus() && other.isPlusMinus()) ||
 				(this == MULT && other == MULT) ||
-				(this == DIV && other == DIV)) {
+				(this == DIV && other == DIV) ||
+				(this == POW && other == POW)) {
 					return true;
 			} else {
 				return false;
@@ -479,7 +484,7 @@ class Expression {
 		}
 
 		boolean isOperator() {
-			return (this == PLUS || this == MINUS || this == EQUALS || this == MULT || this == DIV || this == LEFT_PAR || this == RIGHT_PAR);
+			return (this == PLUS || this == MINUS || this == EQUALS || this == MULT || this == DIV || this == LEFT_PAR || this == RIGHT_PAR || this == POW);
 		}
 
 		boolean isPlusMinus() {
@@ -487,7 +492,8 @@ class Expression {
 		}
 
 		int getPriority() {
-			if (this == LEFT_PAR || this == RIGHT_PAR) return 2;
+			if (this == LEFT_PAR || this == RIGHT_PAR) return 3;
+			if (this == POW) return 2;
 			if (this == DIV || this == MULT) return 1;
 			return 0;
 		}
@@ -558,7 +564,7 @@ class Expression {
 	private String assignedVariableName;
 
 	//pattern which include all allowed chars in expression
-	private static final Pattern ALLOWED_CHARS = Pattern.compile("^[a-zA-Z0-9+-=*/()]*$");
+	private static final Pattern ALLOWED_CHARS = Pattern.compile("^[a-zA-Z0-9+-=*/()^]*$");
 
 	//operator patterns
 	private static final Pattern EQUALS_PATTERN = Pattern.compile("^[=]*$");
