@@ -3,10 +3,10 @@ import java.util.regex.*;
 
 /**
  * The Repl class implements a simple REPL.
- * It supports addition, substraction, multiplication and divison operations.
+ * It supports addition, substraction, multiplication, divison and power operations.
  * Variables and braces are also supported.
  * It calculates the expressions like these:
- *	4 + 6 - 8, 2 - 3 - 4, z+f * (a-b) and so on.
+ *	4 + 6 - 8, 2 - 3 - 4, z+f * (a-b), 2^2 and so on.
  * /vars commands shows assigned variables
  * /help command explains these operations
  * /exit command terminates application
@@ -27,8 +27,8 @@ public class Repl {
 						case "/help":
 						System.out.println("It calculates the expressions like these: "  +
 														"*	4 + 6 - 8, 2 - 3 - 4, z+f * (a-b) and so on." +
-														"It supports addition, substraction, multiplication"+
-													  " and divison operations. Variables and braces" +
+														"It supports addition, substraction, multiplication, "+
+													  "divison and power operations. Variables and braces" +
 														" are also supported. Enter '/exit' to terminate program." +
 														"Enter '/vars' to show variables.");
 						break;
@@ -107,54 +107,39 @@ class Expression {
 
 	public void eval(Map<String, Integer> variables) {
 		if (infixLine != null) {
-
-			//case for "assign" type of expression e.g. "x = ..."
-			if (expAssignsValueToVariable) {
+			if (!expAssignsValueToVariable) {
+				setResult(evaluateExpression(infixLine, variables));
+			} else {
 				//extract right side of an expression
 				List<ExPart> eval = infixLine.subList(2, infixLine.size());
 
 				//in case we have a simple assignment
 				if (eval.size() == 1) {
-					//substitute variables
 					substLine = substituteVariables(eval, variables);
-
-					//get variable name
-					String varName = infixLine.get(0).getValue();
-					assignedVariableName = varName;
-
-					//get value to be assigned
-					result = Integer.parseInt(substLine.get(0).getValue());
-
-					//assign
-					variables.put(varName, result);
+					setResult(Integer.parseInt(substLine.get(0).getValue()));
+					assignedVariableName = infixLine.get(0).getValue();
+					variables.put(assignedVariableName, result);
 				} else {
-					//substitute variables
-					substLine = substituteVariables(eval, variables);
-
-					//convert to Postfix form
-					postfix = infixToPostfix(substLine);
-
-					//evaluate
-					result = calculatePostfix(postfix);
-
-					//assign & set result
-					String varName = infixLine.get(0).getValue();
-					assignedVariableName = varName;
-					variables.put(varName, result);
+					setResult(evaluateExpression(eval, variables));
+					assignedVariableName = infixLine.get(0).getValue();
+					variables.put(assignedVariableName, result);
 				}
-			} else {
-				//substitute variables
-				substLine = substituteVariables(infixLine, variables);
-
-				//convert to Postfix form
-				postfix = infixToPostfix(substLine);
-
-				//evaluate
-				result = calculatePostfix(postfix);
 			}
-
 		} else throw new IllegalArgumentException("Expression does not contain proper infix line ");
+	}//eof eval
 
+	private int evaluateExpression(List<ExPart> infixLine, Map<String, Integer> variables) {
+			//substitute variables
+			substLine = substituteVariables(infixLine, variables);
+
+			//convert to Postfix form
+			postfix = infixToPostfix(substLine);
+
+			return calculatePostfix(postfix);
+	}
+
+	private void setResult(int val) {
+		this.result = val;
 	}
 
 
