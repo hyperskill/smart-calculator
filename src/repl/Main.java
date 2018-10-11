@@ -15,10 +15,9 @@ public class Main {
         }
 
         String l = a.nextLine();
-        l = l.replaceAll("\\s","");
-        char o[]=l.toCharArray();
-        for (char r:o) {
-            int u = Character.getNumericValue(r);
+        String[] num = l.split(" ");
+        for (String n:num) {
+            int u = Integer.parseInt(n);
             s+=u;
         }
         System.out.print(s);
