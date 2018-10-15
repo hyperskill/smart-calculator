@@ -5,13 +5,13 @@ public class Main {
         Scanner a = new Scanner(System.in);
         int s = 0;
         if (a.hasNext("/help")){
-                System.out.println("The program calculates the sum of numbers");
-                String y = a.nextLine();
+            System.out.println("The program calculates the sum of numbers");
+            String y = a.nextLine();
         }
 
         if (a.hasNext("/exit")) {
-                System.out.println("Bye!");
-                return;
+            System.out.println("Bye!");
+            return;
         }
 
         String l = a.nextLine();
