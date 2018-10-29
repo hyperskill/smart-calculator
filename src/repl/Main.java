@@ -1,29 +1,33 @@
 package repl;
 
+
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
         int sum, endNumber, beginNumber, count;
-        int[] arr = new int[2];
-
         String s;
 
         while(true)
         {
-            arr[0] = 0;
-            arr[1] = 0;
             beginNumber = 0;
             count = 0;
             s = in.nextLine();
+            String[] arrS = s.split(" ");
+            int[] arr = new int[arrS.length + 1]; //if only 1 number was printed without space, we need at list 1 element in array
             if(s.equals("/exit"))
             {
                 System.out.println("Bye!");
                 break;
             }
-            if (!s.isEmpty())
+            if(s.equals("/help"))
             {
+                System.out.println("The program calculates the sum of numbers");
+            }
+            else if (!s.isEmpty())
+            {
+                sum = 0;
                 for(int i = 0; i < s.length(); i++)
                 {
                     if (s.charAt(i) == ' '){
@@ -36,7 +40,9 @@ public class Main {
                         arr[count] = Integer.parseInt(s.substring(beginNumber, s.length()));
                     }
                 }
-                sum = arr[0] + arr[1];
+                for (int i = 0; i< arr.length; i++)
+                    sum += arr[i];
+
                 System.out.println(sum);
             }
         }
