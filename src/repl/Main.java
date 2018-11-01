@@ -17,14 +17,10 @@ public class Main {
         continue;
       }
       String[] commands = input.split("\\s");
-      if(commands.length == 1) {
-        System.out.println(Integer.parseInt(commands[0]));
-      }
-      else {
-        int a = Integer.parseInt(commands[0]);
-        int b = Integer.parseInt(commands[1]);
-        System.out.println(a + b);
-      }
+      int s = 0;
+      for(String command : commands)
+        s += Integer.parseInt(command);
+      System.out.println(s);
     }
   }
 }
