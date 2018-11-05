@@ -1,24 +1,104 @@
 package repl;
-import java.util.Scanner;
+import java.util.*;
 public class Main {
     public static void main(String[] args) {
             Scanner a = new Scanner(System.in);
+            Map<String, Integer> vars = new HashMap<>();
+            boolean vare = true;
             do {
                 boolean check = true;
                 CheckString(a);
                 String l = a.nextLine();
                 int s = 0;
                 String[] num = l.split("\\s+");
+
                 int k = 2;
                 int sign = 1;
                 int countNumber = 0;
                 int countSign = 0;
-                for (String n : num) {
-                    if (k % 2 == 0) {
+                for (int i = 0;i<num.length;i++) {
+                    if (num.length ==1) {
+                        if (vars.containsKey(num[0])) {
+                            check = false;
+                            System.out.println(vars.get(num[0]));
+                            break;
+                        } else if (num[0].matches("[a-zA-Z]+")) {
+                            System.out.println("Unknown variable");
+
+                            check = false;
+                            break;
+                        } else
+                            try {
+                                Integer e = Integer.parseInt(num[num.length - 1]);
+                                vars.put(num[0], e);
+                                check = false;
+                                break;
+                            } catch (Throwable p) {
+
+                                System.out.println("Invalid expression");
+                                check = false;
+                                break;
+                            }
+                        }
+
+                    else if (num[1].matches("=")) {
+
+
+                        if (num[0].matches("[a-zA-Z]+")&&num.length<=3) {
+                            try {
+                                if (vars.containsKey(num[2])) {
+                                    vars.put(num[0], vars.get(num[2]));
+                                    check = false;
+                                    break;
+                                } else if (num[2].matches("[a-zA-Z]+")) {
+                                    System.out.println("Unknown variable");
+
+                                    check = false;
+                                    break;
+                                }
+                                else {
+                                    Integer e = Integer.parseInt(num[num.length - 1]);
+                                    vars.put(num[0], e);
+                                    check = false;
+                                    break;
+                                }
+                            } catch (Throwable y) {
+                                System.out.println("Invalid value");
+                                check = false;
+                                break;
+                            }
+
+                        } else if (num[0].matches(".+")&&num.length<=3) {
+                            System.out.println("Invalid Identifier");
+                            check = false;
+                            break;
+                        } else if (num.length > 3) {
+
+                            System.out.println("Invalid Assignment");
+                            check = false;
+                            break;
+                        }
+
+                    }else if (k % 2 == 0) {
                         try {
-                            int u = Integer.parseInt(n);
-                            s += u * sign;
-                            countNumber++;
+                            if (num[i].matches("[a-zA-Z]+")){
+                                if (vars.containsKey(num[i])) {
+                                    int u = vars.get(num[i]);
+                                    s += u * sign;
+                                    countNumber++;
+                                }
+                                else
+                                {
+                                    System.out.println("Unknown variable");
+                                    check = false;
+                                    break;
+                                }
+                            }
+                        else{
+                                int u = Integer.parseInt(num[i]);
+                                s += u * sign;
+                                countNumber++;
+                            }
                         }catch(Throwable y)
                         {
                             System.out.println("Invalid expression");
@@ -26,10 +106,10 @@ public class Main {
                             break;
                         }
                     } else {
-                        if(n.charAt(0)=='-'||n.charAt(0)=='+') {
+                        if(num[i].charAt(0)=='-'||num[i].charAt(0)=='+') {
                             countSign++;
-                            if (n.charAt(0) == '-') {
-                                if (n.length() % 2 == 1)
+                            if (num[i].charAt(0) == '-') {
+                                if (num[i].length() % 2 == 1)
                                     sign = -1;
                                 else
                                     sign = 1;
