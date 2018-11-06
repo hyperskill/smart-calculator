@@ -1,40 +1,49 @@
 package repl;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Main {
 
-    public static int sumCounter(String[] ar){
-        int sum = 0;
-        for (int i = 0; i < ar.length; i++){
-            if(ar[i].equals(""))
-                sum += 0;
-            else
-                sum += Integer.parseInt(ar[i]);
+    public static int inputChecker(String str) {
+        Pattern id = Pattern.compile("[a-zA-z]+=.*");
+        Pattern val = Pattern.compile("[a-zA-Z]+=[0-9]+=?.*");
+        Pattern assign = Pattern.compile("[a-zA-Z]+(=[0-9]+)");
+        Pattern equal = Pattern.compile("[=]");
+
+        if(equal.matcher(str).find()) {
+            if (!id.matcher(str).matches()) {
+                System.out.println("Invalid identifier");
+            } else if (!val.matcher(str).matches()) {
+                System.out.println("Invalid value");
+            } else if (!assign.matcher(str).matches()) {
+                System.out.println("Invalid assignment");
+            } else
+                return 1;
+
+            return -1;
         }
-        return sum;
+        return 1;
     }
 
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
+        Map<String, Integer> inputs = new HashMap<String, Integer>();
+        int sum = 0;
         String s;
-        Pattern pattern = Pattern.compile("^[+-]*\\d+\\s*([+-]+\\s*\\d+)*");
-        Matcher matcher;
-        boolean matches;
+        Pattern plusMinus = Pattern.compile("[+-]");
+        Pattern equal = Pattern.compile("[=]");
+        Pattern digits = Pattern.compile("\\d+");
+        Pattern id = Pattern.compile("[a-zA-z]+=.*");
+        Pattern val = Pattern.compile("[a-zA-Z]+=[0-9]+=?.*");
+        Pattern assign = Pattern.compile("[a-zA-Z]+(=[0-9]+)");
 
         while(true)
         {
             s = in.nextLine();
-            String s1 = s.replaceAll("\\s{2,}", " ");
-            matcher = pattern.matcher(s1);
-            matches = matcher.matches();
-
-            s = s1.replaceAll(" ", "");
-            s1 = s.replaceAll("[-]{2}", "+");
-            s = s1.replaceAll("[-]","+-");
-            String[] arrS = s.split("[+]+");
+            s = s.replaceAll(" ", "");
 
             if(s.equals("/exit"))
             {
@@ -46,11 +55,59 @@ public class Main {
                         "The program calculates the subtraction of numbers if you print subtraction operator \"-\"");
                 continue;
             }
-            if(!matches) {
-                System.out.println("Unknown command");
-                continue;
+
+            if(equal.matcher(s).find()) {
+                if (!id.matcher(s).matches()) {
+                    System.out.println("Invalid identifier");
+                    continue;
+                } else if ((!val.matcher(s).matches()) && !inputs.containsKey(s.split("[=]")[1])) {
+                    System.out.println("Invalid value");
+                    continue;
+                } else if (!assign.matcher(s).matches()) {
+                    System.out.println("Invalid assignment");
+                    continue;
+                }
             }
-            System.out.println(sumCounter(arrS));
+
+            if(!equal.matcher(s).find()){//plusMinus.matcher(s).find()) {
+                sum = 0;
+                String[] vars = s.split("[+-]");
+                String[] signs = s.split("([a-zA-Z]+)|([0-9]+)");
+                for(int i = 0; i < vars.length; i++){
+                    if(inputs.containsKey(vars[i])){
+                        if(plusMinus.matcher(s).matches()){
+                            if(signs[i].equals("-")) {
+                                sum -= inputs.get(vars[i]);
+                            }else {
+                                sum += inputs.get(vars[i]);
+                            }
+                        }else
+                            sum += inputs.get(vars[i]);
+                    }else if(digits.matcher(vars[i]).matches()){
+                        if(plusMinus.matcher(s).matches()) {
+                            if (signs[i].equals("-")) {
+                                sum -= Integer.parseInt(vars[i]);
+                            } else {
+                                sum += Integer.parseInt(vars[i]);
+                            }
+                        }else
+                            sum += Integer.parseInt(vars[i]);
+                    }else{
+                        System.out.println("Unknown variable");
+                    }
+                }
+                System.out.println(sum);
+            }else {
+                String varName = s.split("[=]")[0];
+                if(digits.matcher(s.split("[=]")[1]).matches()) {
+                    Integer varValue = Integer.parseInt(s.split("[=]")[1]);
+                    inputs.put(varName, varValue);
+                }else if(inputs.containsKey(s.split("[=]")[1])){
+                    inputs.put(varName, inputs.get(s.split("[=]")[1]));
+                }else{
+                    System.out.println("Unknown variable");
+                }
+            }
         }
     }
 }
