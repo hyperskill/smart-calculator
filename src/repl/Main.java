@@ -1,5 +1,6 @@
 package repl;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -7,7 +8,7 @@ import java.util.regex.Pattern;
 public class Main {
     static Map<String, String> inputs = new HashMap<String, String>();
     static Deque<String> postfixStack = new ArrayDeque<String>();
-    static Deque<Integer> resStack = new ArrayDeque<Integer>();
+    static Deque<BigInteger> resStack = new ArrayDeque<BigInteger>();
     static Deque<Character> operStack = new ArrayDeque<Character>();
 
     static Pattern digits = Pattern.compile("\\d+");
@@ -137,32 +138,31 @@ public class Main {
         ////calculation of postfix //////////////////////
         while (!postfixStack.isEmpty()){
             if(digits.matcher(postfixStack.peekLast()).matches()){
-                resStack.push(Integer.parseInt(postfixStack.pollLast()));
+                resStack.push(new BigInteger(postfixStack.pollLast()));
             }else if(opers.matcher(postfixStack.peekFirst()).find()){
-                int a = resStack.pollFirst();
-                int b = resStack.pollFirst();
+                BigInteger a = resStack.pollFirst();
+                BigInteger b = resStack.pollFirst();
                 switch (postfixStack.pollLast().charAt(0)){
                     case '+':
-                        resStack.addFirst(a + b);
+                        resStack.addFirst(a.add(b));
                         break;
                     case '-':
-                        resStack.addFirst(b - a);
+                        resStack.addFirst(b.subtract(a));
                         break;
                     case '*':
-                        resStack.addFirst(a * b);
+                        resStack.addFirst(a.multiply(b));
                         break;
                     case '/':
-                        resStack.addFirst(a / b);
+                        resStack.addFirst(b.divide(a));
                         break;
                     case '^':
-                        resStack.addFirst((int)Math.pow(a, b));
+                        resStack.addFirst(a.pow(b.intValue()));
                         break;
                 }
             }
         }
         System.out.println(resStack.peekFirst());
     }
-
 
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
