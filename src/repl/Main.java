@@ -11,7 +11,7 @@ public class Main {
     static Deque<Character> operStack = new ArrayDeque<Character>();
 
     static Pattern digits = Pattern.compile("\\d+");
-    static Pattern opers = Pattern.compile("[+-/*/()]");
+    static Pattern opers = Pattern.compile("[+-/*/()^]");
 
     public static String spaceKiller(String s){
         s = s.replaceAll(" ", "");//kill all spaces
@@ -96,24 +96,25 @@ public class Main {
             }
 
             if (operStack.isEmpty() || operStack.peek() == '(' || operators[i] == '(' ||
-                    (operators[i]=='*' || operators[i] == '/') && (operStack.peek() == '+' || operStack.peek() == '-'))
+                    (operators[i]=='*' || operators[i] == '/') && (operStack.peek() == '+' || operStack.peek() == '-')
+                    || (operators[i]=='^' && (operStack.peek() == '+' || operStack.peek() == '-' || operStack.peek() == '*' || operStack.peek() == '/')))
             {
                 operStack.push(operators[i]);
-            } else if (((((operators[i]=='+') || operators[i]=='-') &&
+            } else if ((((operators[i]=='+' || operators[i]=='-') &&
                     (operStack.peek() == '+' || operStack.peek() == '-')) ||
-                    operStack.peek() =='*' || operStack.peek() =='/') && operators[i]!=')') {
-                while (!operStack.isEmpty() && ((((operators[i]=='+') || operators[i]=='-') &&
-                        (operStack.peek() == '+' || operStack.peek() == '-')) ||
-                        operStack.peek() =='*' || operStack.peek() =='/')) {
+                    ((operators[i] == '*' || operators[i] =='/') && (operStack.peek() =='*' || operStack.peek() =='/'))
+                    || operStack.peek() == '^') && operators[i]!=')')
+            {
+                while (!operStack.isEmpty() &&
+                        ((((operators[i]=='+') || operators[i]=='-') && (operStack.peek() == '+' || operStack.peek() == '-')) ||
+                        ((operStack.peek() =='*' || operStack.peek() =='/') && (operStack.peek() =='*' || operStack.peek() =='/')) ||
+                        operStack.peek() == '^'))
+                {
                     postfixStack.push(operStack.pop().toString());
                 }
                 operStack.push(operators[i]);
             } else if (operators[i] == ')') {
                 while (operStack.peek() != '(')
-                 //   if(operStack.isEmpty())
-               //     {
-                //        break;
-                //    }
                     postfixStack.push(operStack.pop().toString());
                 if (operStack.peek() == '(') {
                     operStack.pop();
@@ -152,6 +153,10 @@ public class Main {
                         break;
                     case '/':
                         resStack.addFirst(a / b);
+                        break;
+                    case '^':
+                        resStack.addFirst((int)Math.pow(a, b));
+                        break;
                 }
             }
         }
@@ -180,15 +185,11 @@ public class Main {
                 flag = assignChecker(s);//check whether assignment is correct
                 if (flag == 1)
                     continue;
-                flag = putVarToMap(s);//put vars to map
-                if (flag == 1)
-                    continue;
+                putVarToMap(s);//put vars to map
             }else{ //printed string does not contains "=", therefore it is might be an expression
-
                 flag = formRPNStack(s.toCharArray());
                 if (flag == 1)
                     continue;
-
                 calcResult();
             }
         }
