@@ -9,7 +9,7 @@ public class Main {
     static Map<String, String> inputs = new HashMap<String, String>();
     static Deque<String> postfixStack = new ArrayDeque<String>();
     static Deque<BigInteger> resStack = new ArrayDeque<BigInteger>();
-    static Deque<Character> operStack = new ArrayDeque<Character>();
+    static Deque<Operand> operStack = new ArrayDeque<Operand>();
 
     static Pattern digits = Pattern.compile("\\d+");
     static Pattern opers = Pattern.compile("[+-/*/()^]");
@@ -73,6 +73,7 @@ public class Main {
     public static int formRPNStack(char[] operators){
         String s = "";
         for(int i = 0; i < operators.length; i++){
+            Operand incomeOperand = new Operand(operators[i]);
 
             if (inputs.containsKey(Character.toString(operators[i]))) {
                 postfixStack.push(inputs.get(Character.toString(operators[i])));
@@ -96,40 +97,34 @@ public class Main {
                 return 1;
             }
 
-            if (operStack.isEmpty() || operStack.peek() == '(' || operators[i] == '(' ||
-                    (operators[i]=='*' || operators[i] == '/') && (operStack.peek() == '+' || operStack.peek() == '-')
-                    || (operators[i]=='^' && (operStack.peek() == '+' || operStack.peek() == '-' || operStack.peek() == '*' || operStack.peek() == '/')))
+            if (operStack.isEmpty() || operStack.peek().getInstance() == '(' || incomeOperand.getInstance() == '(' ||
+                    (incomeOperand.getPriority() > operStack.peek().getPriority()))
+
             {
-                operStack.push(operators[i]);
-            } else if ((((operators[i]=='+' || operators[i]=='-') &&
-                    (operStack.peek() == '+' || operStack.peek() == '-')) ||
-                    ((operators[i] == '*' || operators[i] =='/') && (operStack.peek() =='*' || operStack.peek() =='/'))
-                    || operStack.peek() == '^') && operators[i]!=')')
+                operStack.push(incomeOperand);
+            } else if ((incomeOperand.getPriority() <= operStack.peek().getPriority()) && incomeOperand.getInstance()!=')')
             {
-                while (!operStack.isEmpty() &&
-                        ((((operators[i]=='+') || operators[i]=='-') && (operStack.peek() == '+' || operStack.peek() == '-')) ||
-                        ((operStack.peek() =='*' || operStack.peek() =='/') && (operStack.peek() =='*' || operStack.peek() =='/')) ||
-                        operStack.peek() == '^'))
+                while (!operStack.isEmpty() && (incomeOperand.getPriority() <= operStack.peek().getPriority()))
                 {
-                    postfixStack.push(operStack.pop().toString());
+                    postfixStack.push(operStack.pop().getInstance().toString());
                 }
-                operStack.push(operators[i]);
-            } else if (operators[i] == ')') {
-                while (operStack.peek() != '(')
-                    postfixStack.push(operStack.pop().toString());
-                if (operStack.peek() == '(') {
+                operStack.push(incomeOperand);
+            } else if (incomeOperand.getInstance() == ')') {
+                while (operStack.peek().getInstance() != '(')
+                    postfixStack.push(operStack.pop().getInstance().toString());
+                if (operStack.peek().getInstance() == '(') {
                     operStack.pop();
                 }
             } else {
-                operStack.push(operators[i]);
+                operStack.push(incomeOperand);
             }
         }
         while (!operStack.isEmpty()){
-            if(operStack.peek() == '(' || operStack.peek() == ')'){
+            if(operStack.peek().getInstance() == '(' || operStack.peek().getInstance() == ')'){
                 System.out.println("Invalid expression");
                 return 1;
             }
-            postfixStack.push(operStack.pop().toString());
+            postfixStack.push(operStack.pop().getInstance().toString());
         }
         return 0;
     }
@@ -168,6 +163,7 @@ public class Main {
         Scanner in = new Scanner(System.in);
         int flag;
         String s;
+
 
         while(true) {
             s = in.nextLine();
