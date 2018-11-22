@@ -7,22 +7,16 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             String line = scanner.nextLine();
-            int n = 0;
-            int m = 0;
-            String first = "";
-            String second = "";
-            boolean flag = false;
+            int sum = 0;
             if (line.equals("/exit")) { System.out.println("Bye!"); break; }
+            if (line.equals("/help")) { System.out.println("The program calculates the sum of numbers"); continue; }
             if (line.trim().equals("")) { continue; }
             else {
-                for (int i = 0; i < line.length(); i++) {
-                    if (line.charAt(i) == ' ') { flag = true; continue; }
-                    if (!flag) first += line.charAt(i);
-                    else second += line.charAt(i);
+                String[] nums = line.split(" ");
+                for (String e : nums) {
+                    sum += Integer.parseInt(e);
                 }
-                n = Integer.parseInt(first);
-                if (second.length() > 0) { m = Integer.parseInt(second); }
-                System.out.println(m+n);
+                System.out.println(sum);
             }
         }
     }
