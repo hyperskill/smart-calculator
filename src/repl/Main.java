@@ -10,12 +10,15 @@ public class Main {
             if (s.equals("/exit")) {
                 System.out.println("Buy!");
                 return;
-            }
-            String[] ary = s.split(" ");
-            if (ary.length == 2) {
-                System.out.println(Integer.parseInt(ary[0]) + Integer.parseInt(ary[1]));
-            } else if (ary.length == 1) {
-                System.out.println(Integer.parseInt(ary[0]));
+            } else if (s.equals("/help")) {
+                System.out.println("The program calculates the sum of numbers");
+            } else {
+                String[] ary = s.split(" ");
+                int result = 0;
+                for (String num : ary) {
+                    result += Integer.parseInt(num);
+                }
+                System.out.println(result);
             }
         }
     }
