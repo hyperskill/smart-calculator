@@ -15,7 +15,7 @@ public class Main {
                 System.out.println("The program supports only + or - operators.");
                 System.out.println("Everything should be separated by whitespaces: 2 + 5 or 5 -- 4");
                 System.out.println("If you enter several operators following each other the program would still work,");
-                System.out.println("two adjacent - operators interpreted as a +");
+                System.out.println("two adjacent - operators will be interpreted as a +");
                 continue;
             }
             if (line.trim().equals("")) { continue; }
