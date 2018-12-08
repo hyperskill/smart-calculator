@@ -1,29 +1,23 @@
-package repl;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        int a;
-        int b;
-        String str = sc.nextLine();
-        while (!(str.equals("/exit"))) {
-            String str2 = sc.nextLine();
-            if (str.isEmpty() && str2.isEmpty()) {
-                System.out.println();
-            } else if (str.isEmpty() && !str2.isEmpty()) {
-                System.out.println(str2);
-            } else if (!str.isEmpty() && str2.isEmpty()) {
-                System.out.println(str);
-            } else {
-                a = Integer.parseInt(str);
-                b = Integer.parseInt(str2);
-                System.out.println(a + b);
+        while (true) {
+            String line = sc.nextLine();
+            if (line.isEmpty()) {
+                continue;
+            } else if (line.equals("/help")) {
+                System.out.println("The program calculates the sum of numbers");
+                continue;
+            } else if (line.equals("/exit")) {
+                System.out.println("Bye!");
+                break;
             }
-            str = sc.nextLine();
+            String[] terms = line.split("\\s+");
+            int[] numbers = Arrays.stream(terms).mapToInt(Integer::parseInt).toArray();
+            System.out.printf("%d\n", Arrays.stream(numbers).sum());
         }
-        System.out.println("Bye!");
-
     }
-
 }
