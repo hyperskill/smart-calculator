@@ -13,7 +13,7 @@ public class Main {
             stop_iteration = true;
 
         } else if (input.equals("/help")) {
-            System.out.println("The program serves as microcalculator\nInput /exit to exit the program");
+            System.out.println("The program serves as microcalculator\nType /exit to exit the program");
 
         } else {
             System.out.println("Unknown command");
@@ -29,9 +29,43 @@ public class Main {
         return input.matches("[A-Za-z\\d\\-+\\s]+");
     }
 
+    public static boolean isValidIdentifier(String input) {
+        boolean a = input.matches("[A-Za-z ]+");
+        if (!a) {
+            System.out.println("Invalid identifier");
+        }
+        return a;
+    }
+
+    public static boolean isValidValue(String input){
+        boolean a = input.matches("([A-Za-z]+|\\d+)");
+        if (!a) {
+            System.out.println("Invalid value");
+        }
+        return a;
+    }
+
+    public static boolean isValidAssignment(String[] list){
+        boolean a = list.length == 2;
+        if (!a) {
+            System.out.println("Invalid assignment");
+        }
+        return a;
+    }
+
+    public static boolean isKnownVariable(String value, Map<String, Integer> variables){
+        boolean a = variables.containsKey(value);
+        if (!a) {
+            System.out.println("Unknown variable");
+        }
+        return a;
+    }
+
     public static void tryAssignment(String input, Map<String, Integer> variables) {
-        String[] variableAndValue = input.split("=", 2);
-        boolean sussess = assign(variableAndValue, variables);
+        String[] variableAndValue = input.split(" *= *");
+        if (isValidAssignment(variableAndValue) & isValidIdentifier(variableAndValue[0]) & isValidValue(variableAndValue[1])) {
+            boolean sussess = assign(variableAndValue, variables);
+        }
     }
 
     public static boolean assign(String[] variableAndValue, Map<String, Integer> variables) {
@@ -41,11 +75,8 @@ public class Main {
         try {
             value = Integer.parseInt(valueS);
         } catch (NumberFormatException e) {
-            if (variables.containsKey(valueS)) value = variables.get(valueS);
-            else {
-                System.out.println("Unknown variable");
-                return false;
-            }
+            if (isKnownVariable(valueS, variables)) value = variables.get(valueS);
+            else return false;
         }
         variables.put(variable, value);
         return true;
@@ -61,30 +92,32 @@ public class Main {
         for (int i = 0; i < numbersAndOperators.length; i++) {
             if (i % 2 == 0) {
                 value = numbersAndOperators[i].trim();
+
                 try {
                     number = Integer.parseInt(value);
-                    if (nextMinus) {
-                        ans -= number;
-                    } else {
-                        ans += number;
-                    }
+                    ans = makeCalculation(ans, number, nextMinus);
                 } catch (NumberFormatException e) {
-                    if (variables.containsKey(value)) {
-                        number = variables.get(value);
-                        if (nextMinus) {
-                            ans -= number;
+
+                    if (isValidIdentifier(value)) {
+                        if (isKnownVariable(value, variables)) {
+                            number = variables.get(value);
+                            ans = makeCalculation(ans, number, nextMinus);
+
                         } else {
-                            ans += number;
+                            break;
                         }
+
                     } else {
                         System.out.println("Invalid expression");
                         break;
                     }
                 }
             } else {
+
                 if (numbersAndOperators[i].matches("[+\\-]+")) {
                     nMinuses = numbersAndOperators[i].replaceAll("[^\\-]", "").length();
                     nextMinus = nMinuses % 2 == 1;
+
                 } else {
                     System.out.println("Invalid expression");
                     break;
@@ -95,6 +128,15 @@ public class Main {
                 System.out.println(ans);
             }
         }
+    }
+
+    public static int makeCalculation(int ans, int number, boolean nextMinus){
+        if (nextMinus) {
+            ans -= number;
+        } else {
+            ans += number;
+        }
+        return ans;
     }
 
     public static void main(String[] args) {

@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fe27d36a-ab8d-4f30-af89-40a2bda29db6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -18,14 +17,12 @@
       <file leaf-file-name="Main.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="425">
-              <caret line="74" column="42" lean-forward="true" selection-start-line="74" selection-start-column="42" selection-end-line="74" selection-end-column="42" />
+            <state relative-caret-position="443">
+              <caret line="105" column="32" lean-forward="true" selection-start-line="105" selection-start-column="32" selection-end-line="105" selection-end-column="32" />
               <folding>
                 <element signature="e#681#682#0" expanded="true" />
-                <element signature="e#721#722#0" expanded="true" />
-                <element signature="e#693#694#0" expanded="true" />
-                <element signature="e#752#753#0" expanded="true" />
-                <element signature="e#3522#3539#0" expanded="true" />
+                <element signature="e#726#727#0" expanded="true" />
+                <element signature="e#3536#3553#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -53,6 +50,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="AndroidView" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -69,9 +69,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
-      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="RunDashboard">
@@ -130,7 +127,7 @@
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info id="Capture Tool" order="2" />
       <window_info id="Designer" order="2" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26752505" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.27110156" />
       <window_info id="Learn" order="2" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -152,14 +149,24 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/Main.java">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1110">
+          <caret line="74" column="42" lean-forward="true" selection-start-line="74" selection-start-column="42" selection-end-line="74" selection-end-column="42" />
+          <folding>
+            <element signature="e#681#682#0" expanded="true" />
+            <element signature="e#726#727#0" expanded="true" />
+            <element signature="e#3536#3553#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="360">
           <caret line="24" column="30" lean-forward="true" selection-start-line="24" selection-start-column="30" selection-end-line="24" selection-end-column="30" />
           <folding>
             <element signature="e#681#682#0" expanded="true" />
-            <element signature="e#721#722#0" expanded="true" />
-            <element signature="e#693#694#0" expanded="true" />
-            <element signature="e#752#753#0" expanded="true" />
-            <element signature="e#3522#3539#0" expanded="true" />
+            <element signature="e#726#727#0" expanded="true" />
+            <element signature="e#3536#3553#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -170,10 +177,8 @@
           <caret line="31" column="26" lean-forward="true" selection-start-line="31" selection-start-column="26" selection-end-line="31" selection-end-column="26" />
           <folding>
             <element signature="e#681#682#0" expanded="true" />
-            <element signature="e#721#722#0" expanded="true" />
-            <element signature="e#693#694#0" expanded="true" />
-            <element signature="e#752#753#0" expanded="true" />
-            <element signature="e#3522#3539#0" expanded="true" />
+            <element signature="e#726#727#0" expanded="true" />
+            <element signature="e#3536#3553#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -208,14 +213,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="74" column="42" lean-forward="true" selection-start-line="74" selection-start-column="42" selection-end-line="74" selection-end-column="42" />
+        <state relative-caret-position="443">
+          <caret line="105" column="32" lean-forward="true" selection-start-line="105" selection-start-column="32" selection-end-line="105" selection-end-column="32" />
           <folding>
             <element signature="e#681#682#0" expanded="true" />
-            <element signature="e#721#722#0" expanded="true" />
-            <element signature="e#693#694#0" expanded="true" />
-            <element signature="e#752#753#0" expanded="true" />
-            <element signature="e#3522#3539#0" expanded="true" />
+            <element signature="e#726#727#0" expanded="true" />
+            <element signature="e#3536#3553#0" expanded="true" />
           </folding>
         </state>
       </provider>
