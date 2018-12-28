@@ -1,33 +1,41 @@
 package repl;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.IOException;
 
-public class Main{
-  public static void main(String[] args) throws IOException {
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    String exit = "";
-    while (!exit.equalsIgnoreCase("/exit")) {
-      String[] s = br.readLine().split(" ");
-      exit = s[0];
-      if (exit.equalsIgnoreCase("/exit")){
-        System.out.println("Bye!");
-        break;
-      }
-      else if (s.length ==1 && !exit.equalsIgnoreCase("/exit")){
-        System.out.println(s[0]);
-      }
-      else if (s.length > 1) {
-        int a = Integer.parseInt(s[0]);
-        int b = Integer.parseInt(s[1]);
+public class Repl{
+	public static void main (String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		while(true){
+		String numbers = br.readLine();
 
-        System.out.println(a + b);
-      }
+			if (numbers.equalsIgnoreCase("/help")) {
+				System.out.println("The program calculates the sum of numbers");
+				continue;
+			}
+			else if (numbers.equalsIgnoreCase("/exit")) {
+				System.out.println("Bye!");
+				break;
+			}
+			else if(numbers.equalsIgnoreCase(" ")||numbers.equalsIgnoreCase("")){
+				continue;
+			}
+			else{
+				String[] numberSplitting = numbers.split(" ");
+				if (numberSplitting.length == 1){
+					System.out.println(numberSplitting[0]);
+				}		
 
-    } 
-
-
-  }
-}
+				else {
+					int sum = 0;
+					for(String s : numberSplitting){
+						sum += Integer.parseInt(s);
+					}
+					System.out.println(sum);
+				}
+			}
+		
+		}
+	}
 }
