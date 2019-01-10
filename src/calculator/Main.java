@@ -4,7 +4,7 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
        String exit = "/exit";
-        int a, b;
+     
         String input1;
         String input2;
         Scanner sc1 = new Scanner(System.in);
