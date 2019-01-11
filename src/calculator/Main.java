@@ -1,10 +1,8 @@
 package calculator;
 import java.util.Scanner;
 
-class Main {
-
+public class Main {
     static int i;
-
     public static void main (String[] args) {
 
 
