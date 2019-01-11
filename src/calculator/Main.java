@@ -10,13 +10,15 @@ public class Main {
         String line="";
         i=0;
         while (!line.equals("/exit")) {
+
             line = sc.nextLine();
-            int[] arr = scanning(line);
-            if (!line.equals("/exit")) System.out.println(sum(arr));
+            if (line.equals("/help")) {System.out.println("The program calculates the sum of numbers");} else {
+                int[] arr = scanning(line);
+                if (!line.equals("/exit")) System.out.println(sum(arr));
+            }
         }
         System.out.println("Bye!");
     }
-
 
     static int sum(int[] arr) {
         int s=0;
