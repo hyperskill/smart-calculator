@@ -1,41 +1,70 @@
 package calculator;
+
+import java.util.Arrays;
 import java.util.Scanner;
+import java.util.regex.*;
 
 public class Main {
-    static int i;
-    public static void main (String[] args) {
 
+    static int sum = 0; //while now sum is result
+
+    public static void main (String[] args) {
+        begin();
+
+    }
+
+    static void begin() {
 
         Scanner sc = new Scanner(System.in);
-        String line="";
-        i=0;
+        String line = "";
+
         while (!line.equals("/exit")) {
 
             line = sc.nextLine();
-            if (line.equals("/help")) {System.out.println("The program calculates the sum of numbers");} else {
-                int[] arr = scanning(line);
-                if (!line.equals("/exit")) System.out.println(sum(arr));
+            if (line.equals("/exit")) break;
+            if (line.equals("/help")) {
+                System.out.println("The program calculates the sum of numbers.\n" +
+                        "Put something like -67 + 5 - 34 in line and you will get result.");
             }
+            line = clearingLine(line);
+            processing(line);
+
         }
+
         System.out.println("Bye!");
+
     }
 
-    static int sum(int[] arr) {
-        int s=0;
-        for(int j=0;j<i; j++ ){
-            s=arr[j]+s;
+    static void sum(int digit) {
+        sum = sum + digit;
+
+    }
+
+
+    static String clearingLine(String line) {
+
+        line = line.replaceAll(" ", "");
+        line = line.replaceAll("^", "+");
+        line = line.replaceAll("(--)+", "+");
+        line = line.replaceAll("\\++", "+");
+        line = line.replaceAll("(\\+-)|(-\\+)", "-");
+        line = line.replaceAll("\\+", " +");
+        line = line.replaceAll("-", " -");
+        line = line.replaceAll("^ ", "");
+        return line;
+
+    }
+
+    static void processing(String line) {
+        Pattern pat = Pattern.compile("(?:\\s)");
+        String[] dig_array = pat.split(line);
+
+        for (String dig : dig_array) {
+            sum(Integer.parseInt(dig));
         }
-        return s;
+
+        System.out.println("= " + sum);
+        sum = 0;
     }
 
-    static int[] scanning(String line){
-        Scanner scint = new Scanner(line);
-        int[] arr=new int[25];
-        while(scint.hasNextInt()){
-            arr[i] = scint.nextInt();
-            i++;
-        }
-
-        return arr;
-    }
-}
+} //main end
