@@ -20,6 +20,11 @@ public class Main {
             return false;
         }
 
+        if ("/help".equals(input)) {
+            System.out.println("The program calculates the sum of numbers");
+            return false;
+        }
+
         if ("/exit".equals(input)) {
             System.out.println("Bye!");
             System.exit(0);
