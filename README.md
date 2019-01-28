@@ -2,4 +2,4 @@
 
 Project: Smart Calculator
 
-Go to the *src* directory, change *Main.java* and put your *.java* file(s) in it.
+Stage #2: The sum of two integers in a loop
