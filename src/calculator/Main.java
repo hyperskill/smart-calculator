@@ -6,17 +6,24 @@ public class Main {
 		Scanner scanner = new Scanner(System.in);
 		String s = scanner.nextLine();
 		while (!s.equals("/exit")) {
-			if (s.contains(" ")) {
-				String[] nums = new String[2];
-				nums = s.split(" ");
-				System.out.println(Integer.parseInt(nums[0]) + Integer.parseInt(nums[1]));
-			}
-			else if (s.isEmpty()) {
-			}
+			if(s.isEmpty()) {}
 			else {
-				System.out.println(s);
+				if(s.equals("/help")) {
+					System.out.println("The program calculates the sum of numbers");
+				}
+				else {
+					int result = 0;
+					String[] nums = s.split(" ");
+					for(int i = 0; i < nums.length; i++) {
+						result += Integer.valueOf(nums[i]);
+					}
+					if(nums.length > 0) {
+						System.out.println(result);
+					}
+				}
 			}
 			s = scanner.nextLine();
 		}
+	}
 	
 }
