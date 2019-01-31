@@ -1,5 +1,6 @@
 package calculator;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.regex.*;
 
@@ -222,8 +223,8 @@ public class Main {
         Queue<String> pack = new ArrayDeque<>();
         Scanner sc = new Scanner(line).useDelimiter(" +");
         String value;
-        int poped1;
-        int poped2;
+        BigInteger poped1;
+        BigInteger poped2;
         while (sc.hasNext()) {
             value = sc.next();
 
@@ -238,16 +239,16 @@ public class Main {
                 poped1 = intProcessing(((ArrayDeque<String>) pack).removeLast());
                 poped2 = intProcessing(((ArrayDeque<String>) pack).removeLast());
                 if (value.equals("-")) {
-                    ((ArrayDeque<String>) pack).addLast("" + (poped2 - poped1));
+                    ((ArrayDeque<String>) pack).addLast("" + (poped2.subtract(poped1)));
                 }
                 if (value.equals("+")) {
-                    ((ArrayDeque<String>) pack).addLast("" + (poped2 + poped1));
+                    ((ArrayDeque<String>) pack).addLast("" + (poped2.add(poped1)));
                 }
                 if (value.equals("/")) {
-                    ((ArrayDeque<String>) pack).addLast("" + (poped2 / poped1));
+                    ((ArrayDeque<String>) pack).addLast("" + (poped2.divide(poped1)));
                 }
                 if (value.equals("*")) {
-                    ((ArrayDeque<String>) pack).addLast("" + (poped2 * poped1));
+                    ((ArrayDeque<String>) pack).addLast("" + (poped2.multiply(poped1)));
                 }
             }
         }
@@ -306,8 +307,8 @@ public class Main {
         return map.get(dig);
     }
 
-    static int intProcessing(String dig) {
-        return Integer.parseInt(dig);
+    static BigInteger intProcessing(String dig) {
+        return new BigInteger(dig);
     }
 
 } //main end
