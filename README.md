@@ -9,3 +9,5 @@ Stage #3: The sum of multiple integers (implemented in previous step, added "hel
 Stage #4: Addition and subtraction
 
 Stage #5: Invalid input handling
+
+<b>Stage #6: Supporting variables</b>
