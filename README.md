@@ -14,4 +14,6 @@ Stage #6: Supporting variables
 
 Stage #7: Multiplication, division and parentheses
 
-<b>Stage #7 bonus: added the power operator exponent</b>
+Stage #7 bonus: added the power operator exponent
+
+<b>Stage #8: Arithmetic operations with large numbers</b>

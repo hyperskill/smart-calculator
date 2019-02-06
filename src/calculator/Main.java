@@ -1,5 +1,6 @@
 package calculator;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -17,7 +18,7 @@ public class Main {
             if (checkUserInput(line)) {
                 String[] values = parser(line);
                 if (values != null) {
-                    long result = calculate(values);
+                    BigInteger result = calculate(values);
                     System.out.println(result);
                 }
             }
@@ -51,7 +52,9 @@ public class Main {
         }
 
         //if parentheses,symbols of division and multiply is correct, and not start with "-("
-        if (!checkParentheses(input) || input.matches(".*([*/^]){2,}.*") || input.startsWith("-(")) {
+        if (!checkParentheses(input)
+                || input.matches("(.*([*/^]){2,}.*)|(^[*/\\^]+.*)")
+                || input.startsWith("-(")) {
             System.out.println("Invalid expression");
             return false;
         }
@@ -134,9 +137,8 @@ public class Main {
     }
 
     private static boolean checkEquationWithOnlyDigits(String input) {
-        input = input.replaceAll("[()]*\\s*", "");
         Pattern pattern = Pattern.compile("(^[+-]?\\d+$)|([+-]?\\d*([-+]+|[*^/])\\d+)+");
-        Matcher matcher = pattern.matcher(input);
+        Matcher matcher = pattern.matcher(input.replaceAll("[()]*\\s*", ""));
 
         if (matcher.matches()) {
             return true;
@@ -291,10 +293,10 @@ public class Main {
         return values;
     }
 
-    private static long calculate(String[] values) {
+    private static BigInteger calculate(String[] values) {
         //reverse polish notification
         RPN rpn = new RPN();
-        long result = rpn.parse(values);
+        BigInteger result = rpn.parse(values);
 
         return result;
     }
@@ -302,7 +304,7 @@ public class Main {
     private static void printHelp() {
         System.out.println("The smart calculator.\n" +
                 "Enter the equation using numbers, +, -, *, /, (, ) and = (to assign variables).\n" +
-                "For example, 3 + 8 * ( ( big + 3 ) * 2 + 1 ) - AAA / ( var + 1 ), or var = 10\n" +
+                "For example, 3 + 8 * ( ( big + 3 ) * 2 + 1 ) - AAA / ( var + 1 ), or var = 100000000000000\n" +
                 "Commands:\n" +
                 "\"/help\" for print this note," +
                 "\"/vars\" for print available variables,\n" +

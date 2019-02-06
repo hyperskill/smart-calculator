@@ -1,24 +1,25 @@
 package calculator;
 
+import java.math.BigInteger;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class RPN {
     private final String OPERATORS = "[+*-/()^]";
 
-    public long parse(String[] values) {
-        Deque<Long> digits = new ArrayDeque<>();
+    public BigInteger parse(String[] values) {
+        Deque<BigInteger> digits = new ArrayDeque<>();
         Deque<Character> operators = new ArrayDeque<>();
 
         if (values.length == 2) {
-            return Long.parseLong(values[0] + values[1]);
+            return new BigInteger(values[0] + values[1]);
         }
 
         for (String value : values) {
 
 
             if (!value.matches(OPERATORS)) {
-                digits.push(Long.valueOf(value));
+                digits.push(new BigInteger(value));
                 continue;
             }
 
@@ -37,7 +38,7 @@ public class RPN {
 
                 if (')' == operator) {
                     while (operators.peek() != '(') {
-                        long result = calculate(digits.pollFirst(), digits.pollFirst(), operators.pollFirst());
+                        BigInteger result = calculate(digits.pollFirst(), digits.pollFirst(), operators.pollFirst());
                         digits.push(result);
                     }
                     operators.poll();
@@ -46,7 +47,7 @@ public class RPN {
 
                 while (operators.peek() != null) {
                     if (priority(operators.peek()) >= priority(operator)) {
-                        long result = calculate(digits.pollFirst(), digits.pollFirst(), operators.pollFirst());
+                        BigInteger result = calculate(digits.pollFirst(), digits.pollFirst(), operators.pollFirst());
                         digits.push(result);
                     } else {
                         operators.push(operator);
@@ -66,23 +67,23 @@ public class RPN {
         return digits.poll();
     }
 
-    private long calculate(long firstValue, long secondValue, char operator) {
-        long result = 0;
+    private BigInteger calculate(BigInteger firstValue, BigInteger secondValue, char operator) {
+        BigInteger result = BigInteger.ZERO;
         switch (operator) {
             case '+':
-                result = firstValue + secondValue;
+                result = firstValue.add(secondValue);
                 break;
             case '-':
-                result = secondValue - firstValue;
+                result = secondValue.subtract(firstValue);
                 break;
             case '*':
-                result = firstValue * secondValue;
+                result = firstValue.multiply(secondValue);
                 break;
             case '/':
-                result = secondValue / firstValue;
+                result = secondValue.divide(firstValue);
                 break;
             case '^':
-                result = (long) Math.pow(secondValue, firstValue);
+                result = secondValue.pow(firstValue.intValue());
                 break;
         }
         return result;
