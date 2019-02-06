@@ -4,7 +4,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class RPN {
-    private final String OPERATORS = "[+*-/()]";
+    private final String OPERATORS = "[+*-/()^]";
 
     public long parse(String[] values) {
         Deque<Long> digits = new ArrayDeque<>();
@@ -81,6 +81,9 @@ public class RPN {
             case '/':
                 result = secondValue / firstValue;
                 break;
+            case '^':
+                result = (long) Math.pow(secondValue, firstValue);
+                break;
         }
         return result;
     }
@@ -88,6 +91,7 @@ public class RPN {
     private int priority(char operator) {
         if (operator == '+' || operator == '-') return 1;
         if (operator == '*' || operator == '/') return 2;
+        if (operator == '^') return 3;
         if (operator == '(' || operator == ')') return 0;
         return -1;
     }

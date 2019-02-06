@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Main {
-    private static final String AVAILABLE_SYMBOLS = "[a-zA-Z0-9-+/=*/()]+";
+    private static final String AVAILABLE_SYMBOLS = "[a-zA-Z0-9-+/=*/()^]+";
     private static Map<String, String> variables = new HashMap<>();
 
     public static void main(String[] args) {
@@ -51,7 +51,7 @@ public class Main {
         }
 
         //if parentheses,symbols of division and multiply is correct, and not start with "-("
-        if (!checkParentheses(input) || input.matches(".*([*]|[/]){2,}.*") || input.startsWith("-(")) {
+        if (!checkParentheses(input) || input.matches(".*([*/^]){2,}.*") || input.startsWith("-(")) {
             System.out.println("Invalid expression");
             return false;
         }
@@ -121,7 +121,7 @@ public class Main {
             }
         } else {
             //if equation with var is correct
-            if (input.matches("([-+]?([a-zA-Z]*|[0-9]*)([-+]+|[*/])([a-zA-Z]+|[0-9]+))+")) {
+            if (input.matches("([-+]?([a-zA-Z]*|[0-9]*)([-+]+|[*^/])([a-zA-Z]+|[0-9]+))+")) {
                 return true;
             }
 
@@ -135,7 +135,7 @@ public class Main {
 
     private static boolean checkEquationWithOnlyDigits(String input) {
         input = input.replaceAll("[()]*\\s*", "");
-        Pattern pattern = Pattern.compile("(^[+-]?\\d+$)|([+-]?\\d*[+*/-]+\\d+)+");
+        Pattern pattern = Pattern.compile("(^[+-]?\\d+$)|([+-]?\\d*([-+]+|[*^/])\\d+)+");
         Matcher matcher = pattern.matcher(input);
 
         if (matcher.matches()) {
@@ -278,6 +278,7 @@ public class Main {
                     .replaceAll("[-]", " - ")
                     .replaceAll("[*]", " * ")
                     .replaceAll("[/]", " / ")
+                    .replaceAll("[\\^]", " ^ ")
                     .replaceAll("[(]", " ( ")
                     .replaceAll("[)]", " ) ")
                     .replaceAll("[=]", " = ");

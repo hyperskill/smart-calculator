@@ -12,4 +12,6 @@ Stage #5: Invalid input handling
 
 Stage #6: Supporting variables
 
-<b>Stage #7: Multiplication, division and parentheses</b>
+Stage #7: Multiplication, division and parentheses
+
+<b>Stage #7 bonus: added the power operator exponent</b>
