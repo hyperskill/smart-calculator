@@ -10,4 +10,6 @@ Stage #4: Addition and subtraction
 
 Stage #5: Invalid input handling
 
-<b>Stage #6: Supporting variables</b>
+Stage #6: Supporting variables
+
+<b>Stage #7: Multiplication, division and parentheses</b>

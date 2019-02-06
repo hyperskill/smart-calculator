@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Main {
+    private static final String AVAILABLE_SYMBOLS = "[a-zA-Z0-9-+/=*/()]+";
     private static Map<String, String> variables = new HashMap<>();
 
     public static void main(String[] args) {
@@ -16,8 +17,8 @@ public class Main {
             if (checkUserInput(line)) {
                 String[] values = parser(line);
                 if (values != null) {
-                    long sum = calculate(values);
-                    System.out.println(sum);
+                    long result = calculate(values);
+                    System.out.println(result);
                 }
             }
         }
@@ -28,7 +29,7 @@ public class Main {
             return false;
         }
 
-        if (!input.replaceAll(" ", "").matches("[a-zA-Z0-9-+/=]+")) {
+        if (!input.replaceAll(" ", "").matches(AVAILABLE_SYMBOLS)) {
             System.out.println("Not acceptable chars. Invalid expression");
             return false;
         }
@@ -49,6 +50,12 @@ public class Main {
             }
         }
 
+        //if parentheses,symbols of division and multiply is correct, and not start with "-("
+        if (!checkParentheses(input) || input.matches(".*([*]|[/]){2,}.*") || input.startsWith("-(")) {
+            System.out.println("Invalid expression");
+            return false;
+        }
+
         Pattern charsPattern = Pattern.compile("[a-z]+", Pattern.CASE_INSENSITIVE);
         Matcher charsMatcher = charsPattern.matcher(input.replaceAll("\\s*", ""));
         boolean valid;
@@ -67,8 +74,7 @@ public class Main {
     }
 
     private static boolean checkEquationWithVariables(String input) {
-        input = input.replaceAll("\\s*", "");
-
+        input = input.replaceAll("[()]*\\s*", "");
         //if var is correct
         if (input.matches("^[a-zA-Z]+$")) {
             return true;
@@ -115,7 +121,7 @@ public class Main {
             }
         } else {
             //if equation with var is correct
-            if (input.matches("([-+]?([a-zA-Z]*|[0-9]*)[-+]+([a-zA-Z]+|[0-9]+))+")) {
+            if (input.matches("([-+]?([a-zA-Z]*|[0-9]*)([-+]+|[*/])([a-zA-Z]+|[0-9]+))+")) {
                 return true;
             }
 
@@ -128,8 +134,9 @@ public class Main {
     }
 
     private static boolean checkEquationWithOnlyDigits(String input) {
-        Pattern pattern = Pattern.compile("(^[+-]?\\d+$)|([+-]?\\d*[+-]+\\d+)+");
-        Matcher matcher = pattern.matcher(input.replaceAll("\\s*", ""));
+        input = input.replaceAll("[()]*\\s*", "");
+        Pattern pattern = Pattern.compile("(^[+-]?\\d+$)|([+-]?\\d*[+*/-]+\\d+)+");
+        Matcher matcher = pattern.matcher(input);
 
         if (matcher.matches()) {
             return true;
@@ -137,6 +144,37 @@ public class Main {
             System.out.println("Invalid expression");
             return false;
         }
+    }
+
+    private static boolean checkParentheses(String input) {
+        if (input.replaceAll(" ", "").matches("(.*\\([a-zA-Z0-9]*\\).*)|(.*[a-zA-Z0-9]+\\(.*)|(.*\\)[a-zA-Z0-9]+.*)")) {
+            return false;
+        }
+
+        if (input.indexOf(')') < input.indexOf("(")) {
+            return false;
+        }
+
+        int openingParentheses = 0;
+        int closingParentheses = 0;
+
+        for (int i = 0; i < input.length(); i++) {
+            if ('(' == input.charAt(i)) {
+                openingParentheses++;
+            }
+            if (')' == input.charAt(i)) {
+                closingParentheses++;
+            }
+            if (closingParentheses > openingParentheses) {
+                return false;
+            }
+        }
+
+        if (openingParentheses != closingParentheses) {
+            return false;
+        }
+
+        return true;
     }
 
     private static String[] parser(String line) {
@@ -169,7 +207,6 @@ public class Main {
             variables.put(var, value);
             return null;
         } else {
-
             values = removeExtraOperators(line);
 
             for (int i = 0; i < values.length; i++) {
@@ -178,11 +215,25 @@ public class Main {
                 //if not digit
                 if (var.matches("[-+]?[a-zA-Z]+")) {
                     //if var exists
-                    values[i] = replaceVariableToValue(var);
+                    if (replaceVariableToValue(var) != null) {
+                        values[i] = replaceVariableToValue(var);
+                    } else {
+                        return null;
+                    }
+
                 }
             }
-        }
 
+            //if equation start with "-" or "+"
+            if (values[0].matches("[+-]")) {
+                values[1] = values[0] + values[1];
+                String[] copy = new String[values.length - 1];
+                for (int i = 1; i < values.length; i++) {
+                    copy[i - 1] = values[i];
+                }
+                values = copy;
+            }
+        }
         return values;
     }
 
@@ -213,53 +264,53 @@ public class Main {
     }
 
     private static String[] removeExtraOperators(String line) {
-        String[] values;
+        String[] values = null;
         while (true) {
             line = line.replaceAll("-{2}", "+");
-//            System.out.println(line);
             line = line.replaceAll("[+]{2,}", "+");
-//            System.out.println(line);
             line = line.replaceAll("[+][-]|[-][+]", "-");
-//            System.out.println(line);
 
             if (line.contains("+-") || line.contains("-+") || line.contains("--")) {
                 continue;
             }
 
-            line = line.replaceAll("[+]", " +").replaceAll("[-]", " -").replaceAll("[=]", " = ");
-//            System.out.println(line);
-            line = line.replaceAll("^\\s*|\\s*$", "");
+            line = line.replaceAll("[+]", " + ")
+                    .replaceAll("[-]", " - ")
+                    .replaceAll("[*]", " * ")
+                    .replaceAll("[/]", " / ")
+                    .replaceAll("[(]", " ( ")
+                    .replaceAll("[)]", " ) ")
+                    .replaceAll("[=]", " = ");
+            line = line.trim();
 //            System.out.println(line);
 
-            values = line.split(" ");
+            values = line.split("\\s+");
             break;
         }
         return values;
     }
 
     private static long calculate(String[] values) {
-        if (values.length == 1) {
-            return Long.parseLong(values[0]);
-        }
+        //reverse polish notification
+        RPN rpn = new RPN();
+        long result = rpn.parse(values);
 
-        long result = 0;
-        for (int i = 0; i < values.length; i++) {
-            result += Long.parseLong(values[i]);
-        }
         return result;
     }
 
     private static void printHelp() {
-        System.out.println("The program calculates the calculate of the numbers.\n" +
-                "Enter the equation using numbers, plus and minus.\n" +
-                "For example, -2 + 3 - 5 + 10\n" +
-                ", \"\\vars\" for print available variables" +
-                "or \"\\exit\" for closing program");
+        System.out.println("The smart calculator.\n" +
+                "Enter the equation using numbers, +, -, *, /, (, ) and = (to assign variables).\n" +
+                "For example, 3 + 8 * ( ( big + 3 ) * 2 + 1 ) - AAA / ( var + 1 ), or var = 10\n" +
+                "Commands:\n" +
+                "\"/help\" for print this note," +
+                "\"/vars\" for print available variables,\n" +
+                "\"/exit\" for closing program.");
     }
 
     private static void printVariables() {
         for (Map.Entry<String, String> vars : variables.entrySet()) {
-            System.out.println(vars.getKey() + ": " + vars.getValue());
+            System.out.println(vars.getKey() + " = " + vars.getValue());
         }
     }
 }
