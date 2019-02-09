@@ -10,7 +10,11 @@ public class Main {
         String line = scanner.nextLine();
 
         while (!line.equals("/exit")) {
-            if (line.length() > 0) {
+
+            if (line.equals("/help")) {
+                System.out.println("Any help here");
+            }
+            else if (line.length() > 0) {
 
                 String[] numbers = line.split(" ");
 
