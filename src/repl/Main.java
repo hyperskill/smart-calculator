@@ -34,7 +34,7 @@ public class Main {
                                     "\"--\" => \"+\" and \"---*\" => \"-\".");
                             System.out.println("------------------------------------------------------------------------------");
                             break;
-                            default:
+                            default: 
                                 System.out.println("Uncnown command : " + strings[0]);
                                 break;
 
