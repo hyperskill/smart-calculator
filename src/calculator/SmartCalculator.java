@@ -46,7 +46,7 @@ class SmartCalculator {
         for (char symbol:
              charArray) {
             if (symbol == '-') isNegative = !isNegative;
-            if (symbol >= charPositionOfZero&& symbol <= charPositionOfZero+10) {
+            if (symbol >= charPositionOfZero&& symbol < charPositionOfZero+10) {
                 result = result*10+(int)symbol-charPositionOfZero;
             }
             if (isNegative) result = -result;
