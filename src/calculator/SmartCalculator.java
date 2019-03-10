@@ -16,6 +16,12 @@ class SmartCalculator {
             if (line.equals("/help")) {
                 System.out.println("Any help here");
             }
+            else if (isUnknownCommand(line)) {
+                System.out.println("Unknown command");
+            }
+            else if (isInvalidExpression(line)) {
+                System.out.println("Invalid expression");
+            }
             else if (line.length() > 0) {
 
                 Matcher matcher = Pattern.compile("(^|[ +-])+\\d+").matcher(line);
@@ -49,10 +55,20 @@ class SmartCalculator {
             if (symbol >= charPositionOfZero&& symbol < charPositionOfZero+10) {
                 result = result*10+(int)symbol-charPositionOfZero;
             }
-            if (isNegative) result = -result;
         }
 
+        if (isNegative) result = -result;
         return result;
+    }
+
+    private static boolean isInvalidExpression(String expression) {
+        Matcher matcher = Pattern.compile("^\\s*[+-]*\\s*\\d+(\\s*[+-]+\\s*+\\d+)*\\s*$").matcher(expression);
+        return !matcher.find();
+    }
+
+    private static boolean isUnknownCommand(String command) {
+        Matcher matcher = Pattern.compile("^\\/(?!help$|exit$)\\w*").matcher(command);
+        return matcher.find();
     }
 
 }
