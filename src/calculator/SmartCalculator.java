@@ -1,10 +1,18 @@
 package calculator;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class SmartCalculator {
+
+    private static Map<Character, Integer> variables;
+
+    public SmartCalculator() {
+        variables = new HashMap<>();
+    }
 
     static void runCalculator() {
 
@@ -13,33 +21,61 @@ class SmartCalculator {
 
         while (!line.equals("/exit")) {
 
-            if (line.equals("/help")) {
-                System.out.println("Any help here");
-            }
-            else if (isUnknownCommand(line)) {
-                System.out.println("Unknown command");
-            }
-            else if (isInvalidExpression(line)) {
+            try {
+                parseLine(line);
+            } catch (IllegalArgumentException e) {
                 System.out.println("Invalid expression");
-            }
-            else if (line.length() > 0) {
-
-                Matcher matcher = Pattern.compile("(^|[ +-])+\\d+").matcher(line);
-
-                int result = 0;
-                while (matcher.find()) {
-                    result += getNumberFromString(matcher.group());
-                }
-
-                System.out.println(result);
-
             }
 
             line = scanner.nextLine();
+
         }
 
         System.out.print("Bye!");
 
+    }
+
+    private static void parseLine(String line) {
+        if (isCommand(line)) {
+
+            executeCommand(line);
+
+        } else if (isAssignment(line)) {
+
+        } else if (isInvalidExpression(line)) {
+
+            throw new IllegalArgumentException("Invalid expression");
+
+        } else if (line.length() > 0) {
+
+            Matcher matcher = Pattern.compile("(^|[ +-])+\\d+").matcher(line);
+
+            int result = 0;
+            while (matcher.find()) {
+                result += getNumberFromString(matcher.group());
+            }
+
+            System.out.println(result);
+
+        }
+    }
+
+    private static boolean isAssignment(String line) {
+        return line.contains("=");
+    }
+
+    private static void executeCommand(String line) {
+        if (line.equals("/help")) {
+            System.out.println("Any help here");
+        }
+        else {
+            System.out.println("Unknown command");
+        }
+    }
+
+    private static boolean isCommand(String line) {
+        Matcher matcher = Pattern.compile("^\\/\\w+$").matcher(line);
+        return matcher.find();
     }
 
     private static int getNumberFromString(String group) {
