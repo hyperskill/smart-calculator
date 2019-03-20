@@ -8,10 +8,17 @@ import java.util.regex.Pattern;
 
 class SmartCalculator {
 
-    private enum Status {ORDINAL_EXPRESSION,ASSIGNMENT,VARIABLE,EMPTY_LINE,COMMAND,
-        INVALID_EXPRESSION,INVALID_IDENTIFIER,INVALID_VALUE,INVALID_ASSIGNMENT}
+    static Pattern identifierPattern;
+    static Pattern exspressionPattern;
+    static Pattern assignmentPattern;
 
-    Map<Character, Integer> variables = new HashMap<>();
+    static Map<String, Integer> variables = new HashMap<>();
+
+    SmartCalculator() {
+        identifierPattern = Pattern.compile("^\\s*([a-zA-z])+\\s*(?==)");
+        exspressionPattern = Pattern.compile("(?<==)\\s*([a-zA-z]+|\\d+)\\s*$");
+        assignmentPattern = Pattern.compile("^\\s*([a-zA-z])+\\s*=\\s*([a-zA-z]+|\\d+)\\s*$");
+    }
 
     static void runCalculator() {
 
@@ -32,71 +39,81 @@ class SmartCalculator {
 
     private static void parseLine(String line) {
 
-        Status lineStatus = computeLineStatus(line);
+        if (line.length() == 0) {
 
-        switch (lineStatus) {
-            case ORDINAL_EXPRESSION:
-                processExpression(line);
-                break;
-            case ASSIGNMENT:
-                processAssingment(line);
-                break;
-            case VARIABLE:
-                printVariable(line);
-                break;
-            case COMMAND:
-                executeCommand(line);
-                break;
-            case INVALID_VALUE:
-                System.out.println("Invalid value");
-                break;
-            case INVALID_ASSIGNMENT:
-                System.out.println("Invalid assignment");
-                break;
-            case INVALID_EXPRESSION:
-                System.out.println("Invalid expression");
-                break;
-            case INVALID_IDENTIFIER:
-                System.out.println("Invalid value");
-                break;
-            case EMPTY_LINE:
-                break;
+            //doing nothing
+
+        } else if (isAssignment(line)) {
+
+            processAssingment(line);
+
+        } else if (isVariable(line)) {
+
+            printVariable(line);
+
+        } else if (isCommand(line)) {
+
+            executeCommand(line);
+
+        } else if (isOrdinalExpression(line)) {
+
+            processExpression(line);
+
         }
 
     }
 
-    private static Status computeLineStatus(String line) {
+    private static boolean isAssignment(String line) {
 
-        if (line.length() == 0) return Status.EMPTY_LINE;
-
-        if (isAssignment(line)) return Status.ASSIGNMENT;
-
-        if (isVariable(line)) return  Status.VARIABLE;
-
-        if (isCommand(line)) return Status.COMMAND;
-
-        if (isOrdinalExpression(line)) return Status.ORDINAL_EXPRESSION;
-
-
-
-
-        return Status.INVALID_EXPRESSION;
+        return line.contains("=");
 
     }
 
     private static boolean isVariable(String line) {
 
-        Matcher matcher = Pattern.compile("(^|[ +-])+([a-zA-z])+\\s+$").matcher(line);
+        return Pattern.compile("^\\s*([a-zA-z])+\\s*$").matcher(line).find();
 
-        return matcher.find();
+    }
+
+    private static boolean isCommand(String line) {
+
+        return Pattern.compile("^/\\w+$").matcher(line).find();
 
     }
 
     private static boolean isOrdinalExpression(String line) {
 
-        Matcher matcher = Pattern.compile("((^|[ +-])+(\\d|[a-zA-z])+)+$").matcher(line);
+        return Pattern.compile("((^|[ +-])+(\\d|[a-zA-z])+)+$").matcher(line).find();
 
-        return matcher.find();
+    }
+
+    private static void processAssingment(String line) {
+
+        Matcher identifierMatcher = identifierPattern.matcher(line);
+        Matcher expressionMatcher = exspressionPattern.matcher(line);
+        Matcher assignmentMatcher = assignmentPattern.matcher(line);
+
+        boolean isCorrectIdentifier = identifierMatcher.find();
+        boolean isCorrectValue = expressionMatcher.find();
+        boolean isCorrectAssignment = assignmentMatcher.find();
+
+        if (!isCorrectIdentifier) {
+
+            System.out.println("Invalid identifier");
+
+        } else if (!isCorrectValue) {
+
+            System.out.println("Invalid value");
+
+        } else if (!isCorrectAssignment) {
+
+            System.out.println("Invalid assignment");
+
+        } else {
+
+            variables.put(identifierMatcher.group(),calculateExpression(expressionMatcher.group()));
+
+        }
 
     }
 
@@ -106,13 +123,26 @@ class SmartCalculator {
 
     }
 
-    private static void processAssingment(String line) {
+    private static void executeCommand(String line) {
 
-
+        if (line.equals("/help")) {
+            System.out.println("Any help here");
+        }
+        else {
+            System.out.println("Unknown command");
+        }
 
     }
 
     private static void processExpression(String line) {
+
+        int result = calculateExpression(line);
+
+        System.out.println(result);
+
+    }
+
+    private static int calculateExpression(String line) {
 
         Matcher matcher = Pattern.compile("(^|[ +-])+(\\d|[a-zA-z])+").matcher(line);
 
@@ -132,7 +162,7 @@ class SmartCalculator {
 
         }
 
-        System.out.println(result);
+        return result;
 
     }
 
@@ -142,24 +172,6 @@ class SmartCalculator {
 
     }
 
-
-    private static boolean isAssignment(String line) {
-        return line.contains("=");
-    }
-
-    private static void executeCommand(String line) {
-        if (line.equals("/help")) {
-            System.out.println("Any help here");
-        }
-        else {
-            System.out.println("Unknown command");
-        }
-    }
-
-    private static boolean isCommand(String line) {
-        Matcher matcher = Pattern.compile("^/\\w+$").matcher(line);
-        return matcher.find();
-    }
 
     private static int getNumberFromString(String group) {
 
