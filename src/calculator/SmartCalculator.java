@@ -8,17 +8,17 @@ import java.util.regex.Pattern;
 
 class SmartCalculator {
 
-    static Pattern identifierPattern;
-    static Pattern exspressionPattern;
-    static Pattern assignmentPattern;
+    private static Pattern identifierPattern = Pattern.compile("^\\s*([a-zA-z])+\\s*(?==)");
+    private static Pattern exspressionPattern = Pattern.compile("(?<==)([ +-]*([a-zA-z]+|\\d+)\\s*)+$");
+    private static Pattern assignmentPattern = Pattern.compile("^\\s*([a-zA-z])+\\s*=([ +-]*([a-zA-z]+|\\d+)\\s*)+$");
 
-    static Map<String, Integer> variables = new HashMap<>();
+    private static Map<String, Integer> variables = new HashMap<>();
 
-    SmartCalculator() {
-        identifierPattern = Pattern.compile("^\\s*([a-zA-z])+\\s*(?==)");
-        exspressionPattern = Pattern.compile("(?<==)\\s*([a-zA-z]+|\\d+)\\s*$");
-        assignmentPattern = Pattern.compile("^\\s*([a-zA-z])+\\s*=\\s*([a-zA-z]+|\\d+)\\s*$");
-    }
+//    SmartCalculator() {
+//        identifierPattern = Pattern.compile("^\\s*([a-zA-z])+\\s*(?==)");
+//        exspressionPattern = Pattern.compile("(?<==)([ +-]*([a-zA-z]+|\\d+)\\s*)+$");
+//        assignmentPattern = Pattern.compile("^\\s*([a-zA-z])+\\s*=\\s*([a-zA-z]+|\\d+)\\s*$");
+//    }
 
     static void runCalculator() {
 
@@ -111,7 +111,7 @@ class SmartCalculator {
 
         } else {
 
-            variables.put(identifierMatcher.group(),calculateExpression(expressionMatcher.group()));
+            variables.put(identifierMatcher.group().trim(),calculateExpression(expressionMatcher.group()));
 
         }
 
@@ -168,7 +168,11 @@ class SmartCalculator {
 
     private static int getNumberFromVariable(String group) {
 
-        return  0;
+        if (!variables.containsKey(group.trim())) {
+            throw new IllegalArgumentException("Unknown variable");
+        }
+
+        return  variables.get(group.trim());
 
     }
 
