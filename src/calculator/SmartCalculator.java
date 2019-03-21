@@ -97,15 +97,15 @@ class SmartCalculator {
 
         if (!isCorrectIdentifier) {
 
-            System.out.println("Invalid identifier");
+            throw new IllegalArgumentException("Invalid identifier");
 
         } else if (!isCorrectValue) {
 
-            System.out.println("Invalid value");
+            throw new IllegalArgumentException("Invalid value");
 
         } else if (!isCorrectAssignment) {
 
-            System.out.println("Invalid assignment");
+            throw new IllegalArgumentException("Invalid assignment");
 
         } else {
 
@@ -127,7 +127,7 @@ class SmartCalculator {
             System.out.println("Any help here");
         }
         else {
-            System.out.println("Unknown command");
+            throw new IllegalArgumentException("Unknown command");
         }
 
     }
