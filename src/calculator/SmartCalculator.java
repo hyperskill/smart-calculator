@@ -9,16 +9,10 @@ import java.util.regex.Pattern;
 class SmartCalculator {
 
     private static Pattern identifierPattern = Pattern.compile("^\\s*([a-zA-z])+\\s*(?==)");
-    private static Pattern exspressionPattern = Pattern.compile("(?<==)([ +-]*([a-zA-z]+|\\d+)\\s*)+$");
+    private static Pattern exspressionPattern = Pattern.compile("(?<==)([ +-]*(([a-zA-z])+|(\\d)+)\\s*)$");
     private static Pattern assignmentPattern = Pattern.compile("^\\s*([a-zA-z])+\\s*=([ +-]*([a-zA-z]+|\\d+)\\s*)+$");
 
     private static Map<String, Integer> variables = new HashMap<>();
-
-//    SmartCalculator() {
-//        identifierPattern = Pattern.compile("^\\s*([a-zA-z])+\\s*(?==)");
-//        exspressionPattern = Pattern.compile("(?<==)([ +-]*([a-zA-z]+|\\d+)\\s*)+$");
-//        assignmentPattern = Pattern.compile("^\\s*([a-zA-z])+\\s*=\\s*([a-zA-z]+|\\d+)\\s*$");
-//    }
 
     static void runCalculator() {
 
@@ -27,7 +21,11 @@ class SmartCalculator {
 
         while (!line.equals("/exit")) {
 
-            parseLine(line);
+            try {
+                parseLine(line);
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
 
             line = scanner.nextLine();
 
@@ -168,11 +166,22 @@ class SmartCalculator {
 
     private static int getNumberFromVariable(String group) {
 
-        if (!variables.containsKey(group.trim())) {
+        boolean isNegative;
+
+        String withSign = group.trim();
+        String withoutSign = withSign.replaceAll("[ +-]","");
+
+        Matcher matcher = Pattern.compile("-").matcher(withSign);
+        isNegative = false;
+        while (matcher.find()) isNegative = !isNegative;
+
+        if (!variables.containsKey(withoutSign)) {
             throw new IllegalArgumentException("Unknown variable");
         }
 
-        return  variables.get(group.trim());
+        int numberFromVariables = variables.get(withoutSign);
+
+        return  isNegative?-numberFromVariables:numberFromVariables;
 
     }
 
