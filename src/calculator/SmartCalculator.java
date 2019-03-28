@@ -1,5 +1,6 @@
 package calculator;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,7 +11,7 @@ class SmartCalculator {
     private static Pattern exspressionPattern = Pattern.compile("(?<==)[ -+*/^a-zA-z0-9]+$"); //Pattern.compile("(?<==)([ -+*/^]*(([a-zA-z])+|(\\d)+)\\s*)+$");
     private static Pattern assignmentPattern = Pattern.compile("^\\s*([a-zA-z])+\\s*=[ -+*/^a-zA-z0-9]+$");
 
-    private static Map<String, Integer> variables = new HashMap<>();
+    private static Map<String, BigInteger> variables = new HashMap<>();
     static void runCalculator() {
 
         Scanner scanner = new Scanner(System.in);
@@ -29,8 +30,6 @@ class SmartCalculator {
         }
 
         System.out.print("Bye!");
-
-        Map<String, Integer> precedence = new HashMap<>();
 
     }
 
@@ -54,7 +53,7 @@ class SmartCalculator {
 
         } else {
 
-            System.out.println(processExpression(convertToPostfix(line)));
+            System.out.println(processExpression(convertToPostfix(line)).toString());
 
         }
 
@@ -125,23 +124,13 @@ class SmartCalculator {
 
     }
 
-//    private static void processExpression(String line) {
-//
-//        int result = calculateExpression(line);
-//
-//        System.out.println(result);
-//
-//    }
-
-    private static int calculateExpression(String line) {
-
-        Matcher matcher = Pattern.compile("(^|[ +-])+(\\d|[a-zA-z])+").matcher(line);
+    private static BigInteger calculateExpression(String line) {
 
         return processExpression(convertToPostfix(line));
 
     }
 
-    private static int getNumberFromVariable(String group) throws IllegalArgumentException {
+    private static BigInteger getNumberFromVariable(String group) throws IllegalArgumentException {
 
         boolean isNegative;
 
@@ -156,30 +145,17 @@ class SmartCalculator {
             throw new IllegalArgumentException("Unknown variable");
         }
 
-        int numberFromVariables = variables.get(withoutSign);
+        BigInteger numberFromVariables = variables.get(withoutSign);
 
-        return  isNegative?-numberFromVariables:numberFromVariables;
+        return  isNegative?numberFromVariables.negate():numberFromVariables;
 
     }
 
 
-    private static int getNumberFromString(String group) {
+    private static BigInteger getNumberFromString(String group) {
 
-        char[] charArray = group.toCharArray();
-        boolean isNegative = false;
-        int charPositionOfZero = (int)'0';
-        int result = 0;
+        return new BigInteger(group);
 
-        for (char symbol:
-             charArray) {
-            if (symbol == '-') isNegative = !isNegative;
-            if (symbol >= charPositionOfZero&& symbol < charPositionOfZero+10) {
-                result = result*10+(int)symbol-charPositionOfZero;
-            }
-        }
-
-        if (isNegative) result = -result;
-        return result;
     }
 
     private static String convertToPostfix(String infixExpression) throws IllegalArgumentException {
@@ -265,7 +241,7 @@ class SmartCalculator {
     }
 
 
-    private static int processExpression(String s) {
+    private static BigInteger processExpression(String s) {
 
 
         Stack<String> elementsStack = new Stack<>();
@@ -277,23 +253,23 @@ class SmartCalculator {
             if (isIdentifier(part) || isNumber(part)) {
                 elementsStack.push(part);
             } else if (isOperator(part)) {
-                int b = toNumber(elementsStack.pop());
-                int a = toNumber(elementsStack.pop());
+                BigInteger b = toNumber(elementsStack.pop());
+                BigInteger a = toNumber(elementsStack.pop());
                 switch (part) {
                     case "+":
-                        elementsStack.push(String.valueOf(a + b));
+                        elementsStack.push(a.add(b).toString());
                         break;
                     case "-":
-                        elementsStack.push(String.valueOf(a - b));
+                        elementsStack.push(a.subtract(b).toString());
                         break;
                     case "*":
-                        elementsStack.push(String.valueOf(a * b));
+                        elementsStack.push(a.multiply(b).toString());
                         break;
                     case "/":
-                        elementsStack.push(String.valueOf(a / b));
+                        elementsStack.push(a.divide(b).toString());
                         break;
                     case "^":
-                        elementsStack.push(String.valueOf((int) Math.pow(a, b)));
+                        elementsStack.push(a.pow(b.intValue()).toString());
                         break;
                 }
             }
@@ -303,7 +279,7 @@ class SmartCalculator {
 
     }
 
-    private static int toNumber(String partToParse) throws IllegalArgumentException {
+    private static BigInteger toNumber(String partToParse) throws IllegalArgumentException {
 
         if (isIdentifier(partToParse)) {
             return getNumberFromVariable(partToParse);
